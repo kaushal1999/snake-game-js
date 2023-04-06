@@ -1,0 +1,10 @@
+/* Write CSS Here */
+body {
+	text-align: center;
+}
+
+#board {
+    background-color: green;
+    width:50%;
+    height: 75%;
+}
