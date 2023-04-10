@@ -1,4 +1,4 @@
-const canvas = document.getElementById("board");
+5566545605656988const canvas = document.getElementById("board");
 let ctx = canvas.getContext("2d");
 
 const blocksize = 25;
@@ -7,74 +7,83 @@ const colms = 17;
 
 canvas.height = rows * blocksize;
 canvas.width = colms * blocksize;
+ctx.fillStyle = "green";
+ctx.fillRect(0, 0, blocksize * rows, blocksize * colms);
 
-// console.log("jhjk");
 let gameOver = true;
 
 let foodx = 0;
 let foody = 0;
 
-let snakex = 0;
-let snakey = 0;
+let snakex = 5 * blocksize;
+let snakey = 5 * blocksize;
 let direction = "down";
 let snake = [];
+let speedx;
+let speedy;
 
-
+let intervalId;
 
 let update = () => {
-    if (gameOver) return;
-    snake.push([snakex, snakey]);
+  snakex = snakex + speedx * blocksize;
+  snakey = snakey + speedy * blocksize;
+  if (
+    snakex < 0 ||
+    snakey < 0 ||
+    snakex >= rows * blocksize ||
+    snakey >= colms * blocksize
+  ) {
+    alert("Game Over!");
+    clearInterval(intervalId);
+    gameOver = true;
+    snake = [];
+    snakex = 5 * blocksize;
+    snakey = 5 * blocksize;
+    return;
+  }
+    
+    
+  ctx.fillStyle = "black";
+  ctx.fillRect(snakex, snakey, blocksize, blocksize);
+  if (snake.length) {
     ctx.fillStyle = "green";
-    ctx.fillRect(0, 0, blocksize * rows, blocksize * colms);
-    // placeFood();
-    ctx.fillStyle = "black";
-    for (let index = 0; index < snake.length; index++) {
-        const element = snake[index];
-        ctx.fillRect(element[0], element[1], blocksize, blocksize);
-    }
-    for (let index = 0; index < snake.length-1; index++) {
-        snake[index] = snake[index + 1];
-    }
-    snake.pop();
-    if (direction === "up") snakey -= blocksize;
-    else if (direction === "down") snakey += blocksize;
-    else if (direction === "left") snakex -= blocksize;
-    else snakex += blocksize;
-    
-    if (snakex < 0 || snakey < 0 || snakex >= rows * blocksize || snakey >= colms * blocksize) {
-        console.log(snakey);
-        alert("Game Over!");
-        gameOver = true;
-        snakex = 0;
-        snakey = 0;
-    }
-    
-
-}
+    ctx.fillRect(snake[0][0], snake[0][1], blocksize, blocksize);
+  }
+  for (let index = 0; index < snake.length - 1; index++) {
+    const element = snake[index];
+    snake[index] = snake[index + 1];
+  }
+  snake.pop();
+  snake.push([snakex, snakey]);
+};
 
 // setInterval(update, 100);
 
 let changedirection = (event) => {
-    if (event.code === "ArrowUp") direction = "up";
-    else if (event.code === "ArrowDown") direction = "down";
-    else if (event.code === "ArrowLeft") direction = "left";
-    else if (event.code === "ArrowRight") direction = "right";
-    if (gameOver) {
-        gameOver = false;
-        setInterval(update, 100);
-    }
-}
+  if (event.code === "ArrowUp") {
+    speedx = 0;
+    speedy = -1;
+  } else if (event.code === "ArrowDown") {
+    speedx = 0;
+    speedy = 1;
+  } else if (event.code === "ArrowLeft") {
+    speedy = 0;
+    speedx = -1;
+  } else if (event.code === "ArrowRight") {
+    speedx = 1;
+    speedy = 0;
+  }
+  if (gameOver) {
+    gameOver = false;
+    intervalId = setInterval(update, 1000 / 10);
+  }
+};
 
-document.addEventListener("keydown", changedirection);
-
+document.addEventListener("keyup", changedirection);
 
 let placeFood = () => {
-    foodx = Math.floor(Math.random() * 17) * blocksize;
-    foody = Math.floor(Math.random() * 17) * blocksize;
-    ctx.fillStyle = "black";
-    ctx.fillRect(foodx, foody, blocksize, blocksize);
-}
-
-
-
-// setInterval(placeFood, 1000);
+  foodx = Math.floor(Math.random() * 17) * blocksize;
+  foody = Math.floor(Math.random() * 17) * blocksize;
+  ctx.fillStyle = "black";
+  ctx.fillRect(foodx, foody, blocksize, blocksize);
+};
